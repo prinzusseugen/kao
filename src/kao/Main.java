@@ -6,7 +6,14 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import java.awt.FlowLayout;
 import javax.swing.JTextField;
@@ -14,8 +21,9 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
-
+import kao.Get;
 public class Main extends JFrame {
+	private Register register = null;
 	private JPasswordField passwordField;
 	private JTextField textField;
 
@@ -56,18 +64,46 @@ public class Main extends JFrame {
 		JButton btnNewButton = new JButton("\uB85C\uADF8\uC778");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String users = Get.get(Config.ServerURL+"kkaousers?userID="+textField.getText(), null, "utf-8");
+				try {
+					JSONParser jsonParser = new JSONParser();
+					JSONArray jsonArr = (JSONArray) jsonParser.parse(users);
+					if (jsonArr.size() == 0) {
+						JOptionPane.showMessageDialog(null , "로그인 실패(ID나 패스워드가 맞지 않습니다)");
+					}
+					else {
+						JSONObject user = (JSONObject) jsonArr.get(0);
+						if(user.get("userPW").equals(String.valueOf(passwordField.getPassword()))) {
+							JOptionPane.showMessageDialog(null , "로그인 성공");
+							Main.this.dispose();
+							Menu menu = new Menu((long)user.get("id"));
+							menu.setVisible(true);
+							
+						}
+						else
+							JOptionPane.showMessageDialog(null , "로그인 실패(ID나 패스워드가 맞지 않습니다)");
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		btnNewButton.setBounds(303, 26, 84, 52);
 		getContentPane().add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("\uD68C\uC6D0\uAC00\uC785");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(register==null || register.isShowing()==false) {
+					register = new Register();
+					register.setVisible(true);
+				}				
+				
+			}
+		});
 		btnNewButton_1.setBounds(82, 88, 97, 33);
 		getContentPane().add(btnNewButton_1);
-		
-		JButton btnNewButton_2 = new JButton("ID/PW\uCC3E\uAE30");
-		btnNewButton_2.setBounds(191, 88, 97, 33);
-		getContentPane().add(btnNewButton_2);
 		
 		JLabel lblNewLabel = new JLabel("ID");
 		lblNewLabel.setBounds(46, 29, 26, 15);

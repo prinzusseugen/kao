@@ -6,6 +6,10 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.HttpURLConnection;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Get {
 	/**
@@ -80,5 +84,17 @@ public class Get {
 	public static void main(String[] args) {
 		String body = get("http://localhost:1337/kkaousers", null, "utf-8");
 		System.out.println(body);
+		try {
+			JSONParser jsonParser = new JSONParser();
+			JSONArray jsonArr = (JSONArray) jsonParser.parse(body);
+			for(int i=0; i<jsonArr.size();i++) {
+				JSONObject user = (JSONObject) jsonArr.get(i);
+				System.out.println("userID: "+user.get("userID"));
+				System.out.println("created_at: "+user.get("created_at"));
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }
