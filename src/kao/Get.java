@@ -82,7 +82,7 @@ public class Get {
 	  return sb.toString();
 	}
 	public static void main(String[] args) {
-		String body = get("http://localhost:1337/kkaousers", null, "utf-8");
+		String body = get("http://124.46.166.33:1337/kkaousers", null, "utf-8");
 		System.out.println(body);
 		try {
 			JSONParser jsonParser = new JSONParser();

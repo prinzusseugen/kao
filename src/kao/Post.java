@@ -53,10 +53,10 @@ public class Post {
       }
     }
     public static void main(String[] args) {
-    	String user = "{\"userID\":\"satanya_A\",\"userPW\":\"rkdgmlgns321\"}";
+    	String user = "{\"userID\":\"prinzeugen\",\"userPW\":\"4321\"}";
     	System.out.println(user);
     	try {
-			String body = post("http://localhost:1337/kkaousers", user, "json");
+			String body = post("http://124.46.166.33:1337/kkaousers", user, "json");
 			System.out.println(body);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
