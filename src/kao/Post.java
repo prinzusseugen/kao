@@ -53,7 +53,7 @@ public class Post {
       }
     }
     public static void main(String[] args) {
-    	String user = "{\"userID\":\"prinzeugen\",\"userPW\":\"4321\"}";
+    	String user = "{\"userID\":\"prinzeugen\",\"userPW\":\"4321\"}";	// 테스트 용
     	System.out.println(user);
     	try {
 			String body = post("http://124.46.166.33:1337/kkaousers", user, "json");
