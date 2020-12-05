@@ -25,15 +25,19 @@ import java.awt.event.ActionEvent;
 import javax.swing.Timer;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class ChatRoom extends JFrame {
 
 	private JPanel contentPane;
-	private int userID = 1; // 임시
-	private int chatroomID = 1; // 임시
+	private long userID; // 임시
+	private long chatroomID ; // 임시
 	private long lastupdatedmessage = 0; // 임시
 	private SimpleAttributeSet attribute;
+	private Timer timer;
 	/**
 	 * Launch the application.
 	 */
@@ -41,7 +45,7 @@ public class ChatRoom extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ChatRoom frame = new ChatRoom();
+					ChatRoom frame = new ChatRoom(1,1);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -62,9 +66,12 @@ public class ChatRoom extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ChatRoom() {
+	public ChatRoom(long iD, long l) {
+		this.userID = iD;
+		this.chatroomID = l;
+		
 		setTitle("\uCC44\uD305\uBC29");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 682, 726);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -100,6 +107,7 @@ public class ChatRoom extends JFrame {
 		textArea.requestFocus();
 		textPane.setBackground(new Color(255, 255, 204));
 		textPane.setEditable(false);
+		textPane.setContentType("text/html");
 		scrollPane.setViewportView(textPane);
 		
 		btnNewButton.addActionListener(new ActionListener() {
@@ -111,12 +119,18 @@ public class ChatRoom extends JFrame {
 				}
 			}
 		});
-		Timer timer = new Timer(1000, new ActionListener() {
+		timer = new Timer(1000, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				String body = Get.get(Config.ServerURL+"messages?id_gt="+lastupdatedmessage+"&chatroom="+chatroomID, null, "utf-8");
+				String body = null;
+				try {
+					body = Get.get(Config.ServerURL+"messages?id_gt="+lastupdatedmessage+"&chatroom="+l, null, "utf-8");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				try {
 					JSONParser jsonParser = new JSONParser();
 					JSONArray jsonArr = (JSONArray) jsonParser.parse(body);
@@ -124,16 +138,27 @@ public class ChatRoom extends JFrame {
 						JSONObject chatmessage = (JSONObject) jsonArr.get(i);
 						long id = (long) chatmessage.get("id");
 						String message = (String) chatmessage.get("chatcontent");
-						try {
-							message = new String(message.getBytes(),"UTF-8");
-						} catch (UnsupportedEncodingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 						JSONObject user = (JSONObject) chatmessage.get("kkaouser");
 						String username = (String) user.get("userID");
 						long messageuserid = (long) user.get("id");
-						textPane.setText(textPane.getText()+username+":"+message+"\n");
+						StyledDocument doc = textPane.getStyledDocument();
+                        SimpleAttributeSet attrset = new SimpleAttributeSet();
+                        boolean isMe = messageuserid == iD;
+                        if(isMe) {
+                            StyleConstants.setAlignment(attrset, StyleConstants.ALIGN_RIGHT);
+                        }
+
+                        try {
+                            if(isMe) {
+                                doc.insertString(doc.getLength(),username+"\n"+message+"\n", attrset);
+                            }
+                            else {
+                                doc.insertString(doc.getLength(), username+"\n"+message+"\n", attrset);
+                            }
+                        } catch (BadLocationException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
 						lastupdatedmessage = id;
 						
 					}
@@ -143,5 +168,49 @@ public class ChatRoom extends JFrame {
 			}
 		});
 		timer.start();
+		this.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				timer.stop();
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 }

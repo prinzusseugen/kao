@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import kao.Get;
@@ -71,7 +72,13 @@ public class Main extends JFrame {
 		JButton btnNewButton = new JButton("\uB85C\uADF8\uC778");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String users = Get.get(Config.ServerURL+"kkaousers?userID="+textField.getText(), null, "utf-8");
+				String users = null;
+				try {
+					users = Get.get(Config.ServerURL+"kkaousers?userID="+textField.getText(), null, "utf-8");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				try {
 					JSONParser jsonParser = new JSONParser();
 					JSONArray jsonArr = (JSONArray) jsonParser.parse(users);
@@ -83,7 +90,7 @@ public class Main extends JFrame {
 						if(user.get("userPW").equals(String.valueOf(passwordField.getPassword()))) {
 							JOptionPane.showMessageDialog(null , "로그인 성공");
 							Main.this.dispose();
-							Menu menu = new Menu((long)user.get("id"));
+							Menu menu = new Menu((long)user.get("id"), (String)user.get("userID"));
 							menu.setVisible(true);
 							
 						}
