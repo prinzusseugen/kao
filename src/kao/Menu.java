@@ -20,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -43,6 +45,11 @@ public class Menu extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			Menu menu = new Menu();
+		}
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -127,11 +134,14 @@ public class Menu extends JFrame {
 		contentPane.setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 72, 422, 490);
+		scrollPane.setBounds(12, 97, 422, 465);
 		contentPane.add(scrollPane);
 		
 		Vector userList = new Vector();
 		String users = null;
+		
+		
+		
 		try {
 			users = Get.get(Config.ServerURL+"kkaousers", null, "utf-8");
 		} catch (IOException e1) {
@@ -143,10 +153,10 @@ public class Menu extends JFrame {
 			JSONArray jsonArr = (JSONArray) jsonParser.parse(users);
 			for(int i=0; i<jsonArr.size();i++) {
 				JSONObject user = (JSONObject) jsonArr.get(i);
-				if(userName.equals((String)user.get("userID")))
+				if(userName.equals((String)user.get("nickname")))
 					continue;
 				else
-					userList.add((String)user.get("userID"));
+					userList.add((String)user.get("nickname"));
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -169,11 +179,12 @@ public class Menu extends JFrame {
 		scrollPane.setViewportView(list);
 		
 		JButton btnNewButton = new JButton("\uCC44\uD305\uC2DC\uC791");
+		btnNewButton.setBounds(345, 15, 89, 32);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String otherUser1 = null;
 				try {
-					otherUser1 = Get.get(Config.ServerURL+"kkaousers?userID="+textField_1.getText(), null, "utf-8");
+					otherUser1 = Get.get(Config.ServerURL+"kkaousers?nickname="+textField_1.getText(), null, "utf-8");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -198,28 +209,76 @@ public class Menu extends JFrame {
 				
 			}
 		});
-		
-		btnNewButton.setBounds(322, 14, 112, 35);
 		contentPane.add(btnNewButton);
 		
-		JLabel lblNewLabel = new JLabel("ID");
-		lblNewLabel.setBounds(30, 10, 68, 43);
+		JLabel lblNewLabel = new JLabel("\uB2C9\uB124\uC784");
+		lblNewLabel.setBounds(12, 10, 68, 43);
 		contentPane.add(lblNewLabel);
 		
 		textField = new JTextField();
+		textField.setBounds(80, 13, 110, 38);
 		textField.setFont(new Font("±¼¸²", Font.PLAIN, 14));
 		textField.setBackground(SystemColor.control);
 		textField.setText(userName);
 		textField.setBorder(null);
 		
 		textField.setEditable(false);
-		textField.setBounds(48, 12, 110, 38);
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
 		textField_1 = new JTextField();
-		textField_1.setBounds(177, 21, 133, 21);
+		textField_1.setBounds(190, 21, 133, 21);
 		contentPane.add(textField_1);
 		textField_1.setColumns(10);
+		
+		JButton btnNewButton_1 = new JButton("\uC0C8\uB85C\uACE0\uCE68");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String users = null;
+				Vector userList = new Vector();
+				try {
+					users = Get.get(Config.ServerURL+"kkaousers", null, "utf-8");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					JSONParser jsonParser = new JSONParser();
+					JSONArray jsonArr = (JSONArray) jsonParser.parse(users);
+					for(int i=0; i<jsonArr.size();i++) {
+						JSONObject user = (JSONObject) jsonArr.get(i);
+						if(userName.equals((String)user.get("nickname")))
+							continue;
+						else
+							userList.add((String)user.get("nickname"));
+							JList list = new JList(userList);
+							scrollPane.setViewportView(list);
+							list.addMouseListener(new MouseAdapter() {
+							    public void mouseClicked(MouseEvent evt) {
+							    	if(evt.getClickCount() == 2) {
+							    		String otherUser = (String) list.getSelectedValue();
+							    		OpenChatRoom(userName, otherUser);
+							    	}
+							    }
+
+								private void chatroom() {
+									// TODO Auto-generated method stub
+									
+								}
+							    });
+					}
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		btnNewButton_1.setBounds(167, 61, 97, 23);
+		contentPane.add(btnNewButton_1);
+	}
+
+	public Menu() {
+		// TODO Auto-generated constructor stub
 	}
 }

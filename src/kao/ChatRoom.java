@@ -23,6 +23,8 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.Timer;
+import javax.swing.UIManager;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -42,6 +44,11 @@ public class ChatRoom extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		/*try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			ChatRoom chat = new ChatRoom();
+		}*/
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -119,7 +126,7 @@ public class ChatRoom extends JFrame {
 				}
 			}
 		});
-		timer = new Timer(1000, new ActionListener() {
+		timer = new Timer(100, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -139,7 +146,8 @@ public class ChatRoom extends JFrame {
 						long id = (long) chatmessage.get("id");
 						String message = (String) chatmessage.get("chatcontent");
 						JSONObject user = (JSONObject) chatmessage.get("kkaouser");
-						String username = (String) user.get("userID");
+						String username = (String) user.get("nickname");
+						
 						long messageuserid = (long) user.get("id");
 						StyledDocument doc = textPane.getStyledDocument();
                         SimpleAttributeSet attrset = new SimpleAttributeSet();
@@ -213,4 +221,8 @@ public class ChatRoom extends JFrame {
 			}
 		});
 	}
+
+	/*public ChatRoom() {
+		// TODO Auto-generated constructor stub
+	}*/
 }
